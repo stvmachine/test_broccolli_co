@@ -2,12 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import RequestDialog from "./components/RequestDialog";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import withRoot from "../withRoot";
-
-import * as api from "../api";
 
 const styles = theme => ({
   root: {
