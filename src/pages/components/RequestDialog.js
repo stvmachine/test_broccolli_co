@@ -11,7 +11,7 @@ import * as api from "../../api";
 import { withStyles } from "@material-ui/core/styles";
 
 const styles = {
- container: {
+  container: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -20,20 +20,30 @@ const styles = {
   }
 };
 
+const messageErrors = {
+  isRequired: 'Is required',
+  formatNotValid: 'Format not valid'
+}
+
 class RequestDialog extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       open: false,
-      name: null,
-      email: null,
-      confirmEmail: null
+      name: "",
+      email: "",
+      confirmEmail: "",
+      errors: {
+        name: false,
+        email: false,
+        confirmEmail: false
+      }
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ open: nextProps.open });  
+    this.setState({ open: nextProps.open });
   }
 
   handleClickSubscribe = () => {
@@ -59,9 +69,25 @@ class RequestDialog extends React.Component {
   };
 
   updateName = event => {
-    this.setState({
-      name: event.target.value
-    });
+    const name = event.target.value;
+    if(name && name.length >=3){
+      this.setState( prevState => ({
+        name,
+        errors: {
+          ...prevState.errors,
+          name: null
+        }
+      }));
+    }
+    else{
+      this.setState( prevState => ({
+        name,
+        errors: {
+          ...prevState.errors,
+          name: 'Minimun length accepted is 3 chars.'
+        }
+      }));
+    }
   };
 
   updateEmail = event => {
@@ -78,7 +104,7 @@ class RequestDialog extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { open } = this.state;
+    const { open, errors } = this.state;
 
     return (
       <Dialog open={open} onClose={this.handleClose}>
@@ -89,32 +115,36 @@ class RequestDialog extends React.Component {
             We will send updates occasionally.
           </DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             id="name"
             label="Full name"
             type="string"
+            error={errors.name}
+            helperText={errors.name? errors.name : null}
             onChange={this.updateName.bind(this)}
+            required
             fullWidth
           />
 
           <TextField
-            autoFocus
             margin="dense"
             id="email"
             label="Email"
             type="email"
+            error={errors.email}
             onChange={this.updateEmail.bind(this)}
+            required
             fullWidth
           />
 
           <TextField
-            autoFocus
             margin="dense"
             id="confirm_email"
             label="Confirm email"
             type="email"
+            error={errors.confirmEmail}
             onChange={this.updateConfirmEmail.bind(this)}
+            required
             fullWidth
           />
         </DialogContent>

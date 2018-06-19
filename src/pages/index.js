@@ -1,65 +1,31 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Button from "@material-ui/core/Button";
-import RequestDialog from "./components/RequestDialog";
-import Typography from "@material-ui/core/Typography";
+import Header from "./components/Header";
+import Content from "./components/Content";
+import Footer from "./components/Footer";
 import { withStyles } from "@material-ui/core/styles";
 import withRoot from "../withRoot";
+import banner from "../resources/banner-bg.jpg";
 
-const styles = theme => ({
+const styles = {
   root: {
-    textAlign: "center",
-    paddingTop: theme.spacing.unit * 20
-  },
-  buttonRequest: {
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    borderRadius: 3,
-    border: 0,
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)"
-  },
-  label: {
-    textTransform: "capitalize"
+    display: "flex",
+    minHeight: "100vh",
+    flexDirection: "column",
+    background: `url(${banner}) center`,
+    backgroundSize: "cover"
   }
-});
+};
 
 class Index extends React.Component {
-  state = {
-    open: false
-  };
-
-  openRequestDialog = () => {
-    this.setState({
-      open: true
-    });
-  };
-
   render() {
     const { classes } = this.props;
-    const { open } = this.state;
 
     return (
       <div className={classes.root}>
-        <RequestDialog open={open} />
-        <Typography variant="display1" gutterBottom>
-          A better way to enjoy every day
-        </Typography>
-        <Typography variant="subheading" gutterBottom>
-          be the first to know when we launch
-        </Typography>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={this.openRequestDialog}
-          classes={{
-            root: classes.buttonRequest,
-            label: classes.label
-          }}
-        >
-          Request an invite
-        </Button>
+        <Header />
+        <Content />
+        <Footer />
       </div>
     );
   }
