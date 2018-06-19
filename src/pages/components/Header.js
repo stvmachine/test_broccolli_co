@@ -20,7 +20,7 @@ class Header extends React.Component {
     return (
       <AppBar position="static" color="default">
         <Toolbar>
-          <img className={classes.logo} src={logoImg} />
+          <img alt="logo" className={classes.logo} src={logoImg} />
           <Typography variant="title" color="inherit">
             BROCOLLI & CO.
           </Typography>

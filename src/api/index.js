@@ -13,15 +13,16 @@ export function postRequest(input) {
     })
     .then(response => {
       if (response && response.status === 200 && response.data) {
-        return response.data;
+        return { message: response.data, success: true };
       } else {
         return Promise.reject({ error: "Unexpected error" });
       }
     })
     .catch(error => {
       const response = error.response;
-      return response && response.data && response.data.errorMessage
+      const message = response && response.data && response.data.errorMessage
         ? response.data.errorMessage
         : "Unexpected error";
+      return { message, success: false};
     });
 }

@@ -20,10 +20,10 @@ const styles = {
   }
 };
 
-const messageErrors = {
-  isRequired: 'Is required',
-  formatNotValid: 'Format not valid'
-}
+// const messageErrors = {
+//   isRequired: 'Is required',
+//   formatNotValid: 'Format not valid'
+// }
 
 class RequestDialog extends React.Component {
   constructor(props) {
@@ -34,6 +34,7 @@ class RequestDialog extends React.Component {
       name: "",
       email: "",
       confirmEmail: "",
+      formError: "",
       errors: {
         name: false,
         email: false,
@@ -43,18 +44,18 @@ class RequestDialog extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ open: nextProps.open });
+    // The parent open/closes the dialog
+    if (nextProps.open !== this.props.open) {
+      this.setState({ open: nextProps.open });
+    }
   }
 
   handleClickSubscribe = () => {
     const { name, email } = this.state;
-    this.auth(name, email);
-  };
-
-  handleClose = () => {
     this.setState({
-      open: false
+      formError: ""
     });
+    this.auth(name, email);
   };
 
   auth = (name, email) => {
@@ -64,27 +65,32 @@ class RequestDialog extends React.Component {
         email
       })
       .then(response => {
-        console.log(response);
+        if (response.success) {
+          this.props.handler(response);
+        } else {
+          this.setState({
+            formError: response.message
+          });
+        }
       });
   };
 
   updateName = event => {
     const name = event.target.value;
-    if(name && name.length >=3){
-      this.setState( prevState => ({
+    if (name && name.length >= 3) {
+      this.setState(prevState => ({
         name,
         errors: {
           ...prevState.errors,
           name: null
         }
       }));
-    }
-    else{
-      this.setState( prevState => ({
+    } else {
+      this.setState(prevState => ({
         name,
         errors: {
           ...prevState.errors,
-          name: 'Minimun length accepted is 3 chars.'
+          name: "Minimun length accepted is 3 chars."
         }
       }));
     }
@@ -104,10 +110,10 @@ class RequestDialog extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { open, errors } = this.state;
+    const { open, errors, formError } = this.state;
 
     return (
-      <Dialog open={open} onClose={this.handleClose}>
+      <Dialog open={open} onClose={this.props.handler}>
         <DialogTitle>Request an invite</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -119,8 +125,8 @@ class RequestDialog extends React.Component {
             id="name"
             label="Full name"
             type="string"
-            error={errors.name}
-            helperText={errors.name? errors.name : null}
+            error={!!errors.name}
+            helperText={errors.name ? errors.name : null}
             onChange={this.updateName.bind(this)}
             required
             fullWidth
@@ -131,7 +137,7 @@ class RequestDialog extends React.Component {
             id="email"
             label="Email"
             type="email"
-            error={errors.email}
+            error={!!errors.email}
             onChange={this.updateEmail.bind(this)}
             required
             fullWidth
@@ -142,13 +148,14 @@ class RequestDialog extends React.Component {
             id="confirm_email"
             label="Confirm email"
             type="email"
-            error={errors.confirmEmail}
+            error={!!errors.confirmEmail}
             onChange={this.updateConfirmEmail.bind(this)}
             required
             fullWidth
           />
         </DialogContent>
         <DialogActions classes={{ root: classes.container }}>
+          <span>{formError}</span>
           <Button
             variant="contained"
             onClick={this.handleClickSubscribe}
@@ -163,7 +170,9 @@ class RequestDialog extends React.Component {
 }
 
 RequestDialog.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  open: PropTypes.bool.isRequired,
+  handler: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(RequestDialog);

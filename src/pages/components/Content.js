@@ -4,9 +4,8 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import RequestDialog from "./RequestDialog";
+import SuccessDialog from "./SuccessDialog";
 import withRoot from "../../withRoot";
-
-
 
 const styles = theme => ({
   content: {
@@ -33,11 +32,11 @@ const styles = theme => ({
     textTransform: "capitalize"
   },
   title: {
-      color: 'white'
+    color: "white"
   },
   subHeading: {
-      color: 'white',
-      paddingBottom : '20px'
+    color: "white",
+    paddingBottom: "20px"
   }
 });
 
@@ -46,32 +45,60 @@ class Content extends React.Component {
     super();
 
     this.state = {
-      open: false
+      showRequestDialog: false,
+      showSuccessDialog: false
     };
+
+    this.handleRequestDialog = this.handleRequestDialog.bind(this);
+    this.handleSuccessDialog = this.handleSuccessDialog.bind(this);
   }
 
-  openRequestDialog = () => {
-    this.setState({
-      open: true
-    });
+  handleRequestDialog = event => {
+    // Could receive generic Event on click or an object {success: boolean, message: string}
+    this.setState(prevState => ({
+      showRequestDialog: !prevState.showRequestDialog
+    }));
+
+    if (event.success && event.message) {
+      this.setState({
+        showSuccessDialog: true
+      });
+    }
+  };
+
+  handleSuccessDialog = () => {
+    this.setState(prevState => ({
+      showSuccessDialog: !prevState.showSuccessDialog
+    }));
   };
 
   render() {
     const { classes } = this.props;
-    const { open } = this.state;
+    const { showRequestDialog, showSuccessDialog } = this.state;
     return (
       <div className={classes.content}>
-        <RequestDialog open={open} />
+        <RequestDialog
+          open={showRequestDialog}
+          handler={this.handleRequestDialog}
+        />
+        <SuccessDialog
+          open={showSuccessDialog}
+          handler={this.handleSuccessDialog}
+        />
         <Typography className={classes.title} variant="display1" gutterBottom>
           {"A better way to enjoy every day"}
         </Typography>
-        <Typography className={classes.subHeading} variant="subheading" gutterBottom>
+        <Typography
+          className={classes.subHeading}
+          variant="subheading"
+          gutterBottom
+        >
           {"be the first to know when we launch"}
         </Typography>
         <Button
           variant="contained"
           color="secondary"
-          onClick={this.openRequestDialog}
+          onClick={() => this.setState({ showRequestDialog: true })}
           classes={{
             root: classes.buttonRequest,
             label: classes.label
