@@ -31,9 +31,9 @@ class RequestDialog extends React.Component {
 
     this.state = {
       open: false,
-      name: "",
-      email: "",
-      confirmEmail: "",
+      name: null,
+      email: null,
+      confirmEmail: null,
       formError: "",
       errors: {
         name: false,
@@ -41,12 +41,15 @@ class RequestDialog extends React.Component {
         confirmEmail: false
       }
     };
+
+    // Store the initial state for reset the dialog
+    this.baseState = Object.assign({}, this.state);
   }
 
   componentWillReceiveProps(nextProps) {
     // The parent open/closes the dialog
     if (nextProps.open !== this.props.open) {
-      this.setState({ open: nextProps.open });
+      this.setState({...this.baseState, open: nextProps.open});
     }
   }
 
