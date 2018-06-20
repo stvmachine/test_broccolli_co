@@ -9,6 +9,8 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import * as api from "../../api";
 import { withStyles } from "@material-ui/core/styles";
+import validate from "../../validate";
+import isEqual from "lodash/isEqual";
 
 const styles = {
   container: {
@@ -17,13 +19,21 @@ const styles = {
     alignItems: "center",
     flex: "0 0 auto",
     margin: "8px 4px"
+  },
+  dialogActions: {
+    display: "flex",
+    flexDirection: "column"
   }
 };
 
-// const messageErrors = {
-//   isRequired: 'Is required',
-//   formatNotValid: 'Format not valid'
-// }
+function removeByKey(myObj, deleteKey) {
+  return Object.keys(myObj)
+    .filter(key => key !== deleteKey)
+    .reduce((result, current) => {
+      result[current] = myObj[current];
+      return result;
+    }, {});
+}
 
 class RequestDialog extends React.Component {
   constructor(props) {
@@ -31,34 +41,48 @@ class RequestDialog extends React.Component {
 
     this.state = {
       open: false,
-      name: null,
-      email: null,
-      confirmEmail: null,
-      formError: "",
+      values: {
+        name: null,
+        email: null,
+        confirmEmail: null
+      },
       errors: {
-        name: false,
-        email: false,
-        confirmEmail: false
-      }
+        name: "",
+        email: "",
+        confirmEmail: ""
+      },
+      formError: ""
     };
 
     // Store the initial state for reset the dialog
     this.baseState = Object.assign({}, this.state);
+    this.handleClickSubscribe = this.handleClickSubscribe.bind(this);
+    this.handleChanges = this.handleChanges.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     // The parent open/closes the dialog
     if (nextProps.open !== this.props.open) {
-      this.setState({...this.baseState, open: nextProps.open});
+      this.setState({ ...this.baseState, open: nextProps.open });
     }
   }
 
   handleClickSubscribe = () => {
-    const { name, email } = this.state;
+    const { name, email } = this.state.values;
     this.setState({
       formError: ""
     });
     this.auth(name, email);
+  };
+
+  handleChanges = (nameInput, event) => {
+    const value = event.target.value;
+    const updatedValue = {};
+    updatedValue[nameInput] = value;
+    this.setState({ values: { ...this.state.values, ...updatedValue } }, () => {
+      const errors = validate(this.state.values);
+      this.setState({ errors });
+    });
   };
 
   auth = (name, email) => {
@@ -78,43 +102,16 @@ class RequestDialog extends React.Component {
       });
   };
 
-  updateName = event => {
-    const name = event.target.value;
-    if (name && name.length >= 3) {
-      this.setState(prevState => ({
-        name,
-        errors: {
-          ...prevState.errors,
-          name: null
-        }
-      }));
-    } else {
-      this.setState(prevState => ({
-        name,
-        errors: {
-          ...prevState.errors,
-          name: "Minimun length accepted is 3 chars."
-        }
-      }));
-    }
-  };
-
-  updateEmail = event => {
-    this.setState({
-      email: event.target.value
-    });
-  };
-
-  updateConfirmEmail = event => {
-    this.setState({
-      confirmEmail: event.target.value
-    });
-  };
-
   render() {
     const { classes } = this.props;
-    const { open, errors, formError } = this.state;
-
+    const { open, values, errors, formError } = this.state;
+    const canSubmit =
+      values.confirmEmail &&
+      values.email &&
+      values.name &&
+      !errors.confirmEmail &&
+      !errors.email &&
+      !errors.name;
     return (
       <Dialog open={open} onClose={this.props.handler}>
         <DialogTitle>Request an invite</DialogTitle>
@@ -130,7 +127,7 @@ class RequestDialog extends React.Component {
             type="string"
             error={!!errors.name}
             helperText={errors.name ? errors.name : null}
-            onChange={this.updateName.bind(this)}
+            onChange={e => this.handleChanges("name", e)}
             required
             fullWidth
           />
@@ -141,7 +138,8 @@ class RequestDialog extends React.Component {
             label="Email"
             type="email"
             error={!!errors.email}
-            onChange={this.updateEmail.bind(this)}
+            helperText={errors.email ? errors.email : null}
+            onChange={e => this.handleChanges("email", e)}
             required
             fullWidth
           />
@@ -152,20 +150,24 @@ class RequestDialog extends React.Component {
             label="Confirm email"
             type="email"
             error={!!errors.confirmEmail}
-            onChange={this.updateConfirmEmail.bind(this)}
+            helperText={errors.confirmEmail ? errors.confirmEmail : null}
+            onChange={e => this.handleChanges("confirmEmail", e)}
             required
             fullWidth
           />
         </DialogContent>
         <DialogActions classes={{ root: classes.container }}>
-          <span>{formError}</span>
-          <Button
-            variant="contained"
-            onClick={this.handleClickSubscribe}
-            color="primary"
-          >
-            Subscribe
-          </Button>
+          <div className={classes.dialogActions}>
+            <span>{formError}</span>
+            <Button
+              variant="contained"
+              onClick={this.handleClickSubscribe}
+              color="primary"
+              disabled={!canSubmit}
+            >
+              Subscribe
+            </Button>
+          </div>
         </DialogActions>
       </Dialog>
     );
