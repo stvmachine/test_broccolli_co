@@ -19,7 +19,7 @@ See the screenshots at the end of this document to see the results.
 
 ## Code Challenge Content
 
-* Broccoli & Co., an upcoming online service company, would like to let people to "Request an invitation" on their website. *
+*Broccoli & Co., an upcoming online service company, would like to let people to "Request an invitation" on their website.*
 
 ### The functionality
 Create a simple yet clean homepage for them that allow users to enter their name and email to receive email invitations.
@@ -29,8 +29,6 @@ Create a simple yet clean homepage for them that allow users to enter their name
 - Shows a fixed header that is always on top of the window and a footer that is always on the bottom of the window (assuming a
 reasonable window height).
 - The page content is sandwiched in the middle, containing just a heading, a small piece of text and a button to request an invite.
-- A rough mockup of the basic layout is attached. While preserving this layout on desktop, you may style it however you wish, with or
-without images.
 - The solution must be mobile friendly (users won't need to pinch and zoom on their mobile devices).
 
 ### UI Behaviour / Validation
@@ -55,8 +53,11 @@ and will simply close - revealing the homepage again.
 ## Screenshots
 
 ![Landing](/screenshots/1.png?raw=true)
+
 ![Modal to request](/screenshots/2.png?raw=true)
+
 ![Modal answer](/screenshots/3.png?raw=true)
+
 
 ## Template based on create-react-app
 
