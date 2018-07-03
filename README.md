@@ -10,7 +10,12 @@
 npm install
 npm run start
 ```
+## Screenshots
 
-## The idea behind the example
+![Landing](/screenshots/1.png?raw=true)
+![Modal to request](/screenshots/2.png?raw=true)
+![Modal answer](/screenshots/3.png?raw=true)
+
+## Template based on create-react-app
 
 [Create React App](https://github.com/facebookincubator/create-react-app) with no build configuration.
